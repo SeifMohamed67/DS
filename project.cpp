@@ -3,7 +3,6 @@
 using namespace std;
 
 int space = 0;
-
 struct order
 {
     int order_id;
@@ -24,10 +23,19 @@ public:
         return 0;
     }
 
-    bool isFull()
+    /*bool isFull()
     {
         if ((rear + 1) % MAX_SIZE == front) return 1;
         return 0;
+    }
+*/
+    bool isFull()
+    {
+        if(front==0 && rear ==MAX_SIZE-1)
+            return true;
+        if(front == rear+1)
+            return true;
+        return false;
     }
 
     void enqueue(order val)
@@ -36,18 +44,15 @@ public:
             cout << "Queue Overflow!\n";
             return;
         }
-        if(rear == -1 && front == -1)
+        else if(front == -1)
         {
-            rear++;
             front++;
-            arr[rear] = val;
-            return;
         }
         rear = (rear + 1) % MAX_SIZE;
         arr[rear] = val;
     }
 
-    void dequeue()
+   /* void dequeue()
     {
         if (this->isEmpty()) {
             cout << "Queue Underflow!\n";
@@ -55,7 +60,19 @@ public:
         }
         front = (front + 1) % MAX_SIZE;
     }
- 
+ */
+ void dequeue()
+    {
+        if(front==-1)
+            cout << "Queue is empty" << endl;
+        else
+        {
+            if(front == rear)
+                front = rear = -1;
+            else
+                front = (front + 1)%MAX_SIZE;
+        }
+    }
     void finish_orders()
     {
     if(this->isEmpty())
@@ -63,7 +80,8 @@ public:
         cout << "There is No orders now\n";
         return;
     }
-    cout <<"ID : "  << arr[front].order_id << " , Name :" << arr[front].order_name << " , Size : " << arr[front].order_size << "\n";
+    cout<<"Order finished !\n";
+    cout <<"ID : "  << arr[front].order_id << " | Name :" << arr[front].order_name << " | Size : " << arr[front].order_size << "\n";
     dequeue();
     }
 
@@ -92,19 +110,57 @@ public:
 
 
 order place_order(order x){
-    cout << "please enter meal ID : ";
-    cin >> x.order_id;
-    cout << "please enter meal name : ";
-    cin >> x.order_name;
-    cout << "please choose a size : ";
-    cin >> x.order_size;
+    //x.order_id++;
+    bool check = false;
+    string orderName[] = {"","Pizza","Chicken Burger","Beef Burger","Soda"};
+    cout<<"Menu\n";
+    cout<<"------------\n";
+    cout<<"1.Pizza\n";
+    cout<<"2.Chicken Burger\n";
+    cout<<"3.Beef Burger\n";
+    cout<<"4.Soda\n";
+    while(check == false)
+    {
+    int i;
+    cin>>i;
+    if(i < 1 || i > 4)
+    {
+        cout<<"Invalid input, try again\n";
+    }else
+    {
+        x.order_name = orderName[i];
+        check = true;
+    }
+    }
+    string size[] = {"S","M","L","XL"};
+    cout<<"Size\n";
+    cout<<"------------\n";
+    cout<<"1.S\n";
+    cout<<"2.M\n";
+    cout<<"3.L\n";
+    cout<<"4.XL\n";
+    check = false;
+    while(check == false)
+    {
+    int i;
+    cin>>i;
+    if(i < 1 || i > 4)
+    {
+        cout<<"Invalid input, try again\n";
+    }else
+    {
+        x.order_size = size[i];
+        check = true;
+    }
+    }
+
     return x;
 };
 
 int main()
 {
     Queue q;
-    
+    int orderid = 1;
     cout<<"Welcome to Ptizza Restaurant \n";
     bool loop = true;
     while(loop)
@@ -127,19 +183,31 @@ int main()
                     cout << "There is no Free space Now !\n";
                     break;
                 }
+                X.order_id = orderid++;
                 q.enqueue(place_order(X));
+                //X.order_id = orderid++;
                 cout << "Added to queue. \n";
                 space++;
                 break;
             }
             case 2:
             {
+                if(q.remaining_space() == 5)
+                {
+                    cout<<"There are no orders!\n";
+                    break;
+                }
                 q.finish_orders();
                 space--;
                 break;
             }
             case 3:
             {
+                if(q.remaining_space() == 5)
+                {
+                    cout<<"There are no orders!\n";
+                    break;
+                }
                 q.print_orders();
                 cout << "\n";
                 break;
